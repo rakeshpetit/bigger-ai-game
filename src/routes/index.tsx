@@ -1,22 +1,34 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Stack, Typography } from '@mui/material'
-import z from 'zod'
-import { Counter } from '~/components/Counter'
+import { createFileRoute } from "@tanstack/react-router";
+import { Stack, Typography, Button } from "@mui/material";
+import { Link } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/')({
-  validateSearch: z.object({
-    count: z.number().optional(),
-  }),
+export const Route = createFileRoute("/")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
   return (
-    <Stack alignItems="center">
-      <Typography variant="h1" marginBlockEnd={4}>
-        Hello world!
+    <Stack
+      alignItems="center"
+      spacing={4}
+      sx={{ maxWidth: "600px", mx: "auto", p: 4 }}
+    >
+      <Typography variant="h2" textAlign="center">
+        Welcome to Bigger AI Game!
       </Typography>
-      <Counter />
+      <Typography variant="body1" textAlign="center">
+        Try to think of things that are bigger than the previous item. How far
+        can you go?
+      </Typography>
+      <Button
+        component={Link}
+        to="/game"
+        variant="contained"
+        size="large"
+        color="primary"
+      >
+        Start Game
+      </Button>
     </Stack>
-  )
+  );
 }
