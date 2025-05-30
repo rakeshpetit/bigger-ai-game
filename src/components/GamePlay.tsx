@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CircularProgress } from "@mui/material";
 
 interface GameState {
   currentItem: string | null;
@@ -8,19 +9,22 @@ interface GameState {
   description: string | null;
 }
 
-export function GamePlay() {
-  const [state, setState] = useState<GameState>({
-    currentItem: "Kingfisher",
-    score: 0,
-    gameStatus: "playing",
-    message: "Enter something bigger than a Kingfisher!",
-    description: null,
-  });
+const initialState: GameState = {
+  currentItem: "Kingfisher",
+  score: 0,
+  gameStatus: "playing",
+  message: "Enter something bigger than a Kingfisher!",
+  description: null,
+};
 
+export function GamePlay() {
+  const [state, setState] = useState<GameState>(initialState);
   const [userInput, setUserInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await fetch(
@@ -53,9 +57,10 @@ export function GamePlay() {
         message: "An error occurred. Please try again.",
         description: null,
       }));
+    } finally {
+      setIsLoading(false);
+      setUserInput("");
     }
-
-    setUserInput("");
   };
 
   return (
@@ -90,27 +95,43 @@ export function GamePlay() {
       )}
 
       {state.gameStatus === "playing" ? (
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            marginBottom: "20px",
+          }}
+        >
           <input
             type="text"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
             placeholder="Enter something bigger..."
-            style={{ marginRight: "10px", padding: "5px" }}
+            style={{ padding: "5px", flex: 1 }}
+            disabled={isLoading}
           />
-          <button type="submit">Submit</button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            style={{
+              minWidth: "80px",
+              height: "32px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {isLoading ? <CircularProgress size={20} /> : "Submit"}
+          </button>
         </form>
       ) : (
         <button
           onClick={() => {
-            setState({
-              currentItem: "coffee",
-              score: 0,
-              gameStatus: "playing",
-              message: "Enter something bigger than coffee!",
-              description: null,
-            });
+            setState(initialState);
           }}
+          style={{ marginBottom: "20px" }}
         >
           Play Again
         </button>
