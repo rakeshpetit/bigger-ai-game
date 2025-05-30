@@ -5,14 +5,16 @@ interface GameState {
   score: number;
   gameStatus: "playing" | "gameOver";
   message: string;
+  description: string | null;
 }
 
 export function GamePlay() {
   const [state, setState] = useState<GameState>({
-    currentItem: "duck", // Starting with coffee as initial item
+    currentItem: "Kingfisher",
     score: 0,
     gameStatus: "playing",
-    message: "Enter something bigger than coffee!",
+    message: "Enter something bigger than a Kingfisher!",
+    description: null,
   });
 
   const [userInput, setUserInput] = useState("");
@@ -29,26 +31,27 @@ export function GamePlay() {
 
       const data = await response.json();
 
-      console.log("Response from AI:", data);
-
       if (data.bigger) {
         setState((prev) => ({
           ...prev,
           score: prev.score + 10,
           currentItem: userInput,
           message: "You did it! 🎉",
+          description: data.description,
         }));
       } else {
         setState((prev) => ({
           ...prev,
           gameStatus: "gameOver",
           message: `Game Over! Final score: ${prev.score}`,
+          description: data.description,
         }));
       }
     } catch (error) {
       setState((prev) => ({
         ...prev,
         message: "An error occurred. Please try again.",
+        description: null,
       }));
     }
 
@@ -72,6 +75,19 @@ export function GamePlay() {
       >
         {state.message}
       </div>
+      {state.description && (
+        <div
+          style={{
+            marginBottom: "20px",
+            padding: "10px",
+            backgroundColor: "#f5f5f5",
+            borderRadius: "4px",
+            fontSize: "0.9em",
+          }}
+        >
+          {state.description}
+        </div>
+      )}
 
       {state.gameStatus === "playing" ? (
         <form onSubmit={handleSubmit}>
@@ -92,6 +108,7 @@ export function GamePlay() {
               score: 0,
               gameStatus: "playing",
               message: "Enter something bigger than coffee!",
+              description: null,
             });
           }}
         >
