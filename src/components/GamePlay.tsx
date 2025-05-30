@@ -1,12 +1,19 @@
 import { useState } from "react";
 import { CircularProgress } from "@mui/material";
 
+interface HistoryEntry {
+  item: string;
+  points: number;
+  description: string;
+}
+
 interface GameState {
   currentItem: string | null;
   score: number;
   gameStatus: "playing" | "gameOver";
   message: string;
   description: string | null;
+  history: HistoryEntry[];
 }
 
 const initialState: GameState = {
@@ -15,6 +22,7 @@ const initialState: GameState = {
   gameStatus: "playing",
   message: "Enter something bigger than a Kingfisher!",
   description: null,
+  history: [],
 };
 
 export function GamePlay() {
@@ -42,6 +50,14 @@ export function GamePlay() {
           currentItem: userInput,
           message: "You did it! 🎉",
           description: data.description,
+          history: [
+            ...prev.history,
+            {
+              item: userInput,
+              points: 10,
+              description: data.description,
+            },
+          ],
         }));
       } else {
         setState((prev) => ({
@@ -135,6 +151,48 @@ export function GamePlay() {
         >
           Play Again
         </button>
+      )}
+
+      {/* History Section */}
+      {state.history.length > 0 && (
+        <div style={{ marginTop: "40px" }}>
+          <h2>History</h2>
+          <div
+            style={{
+              border: "1px solid #e0e0e0",
+              borderRadius: "4px",
+              overflow: "hidden",
+            }}
+          >
+            {state.history.map((entry, index) => (
+              <div
+                key={index}
+                style={{
+                  padding: "15px",
+                  borderBottom:
+                    index < state.history.length - 1
+                      ? "1px solid #e0e0e0"
+                      : "none",
+                  backgroundColor: index % 2 === 0 ? "#f9f9f9" : "white",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "5px",
+                  }}
+                >
+                  <strong>{entry.item}</strong>
+                  <span style={{ color: "green" }}>+{entry.points} points</span>
+                </div>
+                <div style={{ fontSize: "0.9em", color: "#666" }}>
+                  {entry.description}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
